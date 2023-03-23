@@ -1,3 +1,19 @@
+# Improving Custom Diffusion on difficult combinations of concepts
+
+Our team has enhanced the Custom Diffusion method by introducing additional modes to facilitate the unfreezing of the self and/or cross-attention layers within the U-net architecture. This modification was aimed at optimizing the outcome of image generation for composite concepts, such as concurrently drawing a cat and a dog.
+
+Article Link: https://medium.com/crater-labs/improving-custom-diffusion-on-difficult-combinations-of-concepts-6487d8d6cc78
+
+## Instructions
+Please enter one of the options below under `freeze_model` param in `finetune_joint.yaml`, then follow the original repo's instructions    
+`crossattn-kv`: Default, unfreezes the key and value blocks only in the cross-attention  
+`crossattn`: Unfreezes entire cross-attention blocks  
+`self-crossattn-kv`: Unfreezes the key and value blocks in the cross-attention, and entire self-attention blocks  
+`self-crossattn`: Unfreezes both self-attention and cross-attention blocks  
+<p align="center">
+<img src='2.PNG' align="center" width=800>
+</p>
+
 # Custom Diffusion
 
 ### [website](https://www.cs.cmu.edu/~custom-diffusion/)  | [paper](http://arxiv.org/abs/2212.04488) | [gradio demo](https://huggingface.co/spaces/nupurkmr9/custom-diffusion)
@@ -16,7 +32,7 @@ Our method further allows you to use a combination of multiple concepts such as 
 
 ***Multi-Concept Customization of Text-to-Image Diffusion*** <br>
 [Nupur Kumari](https://nupurkmr9.github.io/), [Bingliang Zhang](https://zhangbingliang2019.github.io), [Richard Zhang](https://richzhang.github.io/), [Eli Shechtman](https://research.adobe.com/person/eli-shechtman/), [Jun-Yan Zhu](https://www.cs.cmu.edu/~junyanz/)<br>
-In CVPR 2023 <br>
+arXiv preprint arXiv:2212.04488 <br>
 
 
 
@@ -310,8 +326,8 @@ Converted checkpoints are saved in the `<path-to-folder>` of the original checkp
 @article{kumari2022customdiffusion,
   title={Multi-Concept Customization of Text-to-Image Diffusion},
   author={Kumari, Nupur and Zhang, Bingliang and Zhang, Richard and Shechtman, Eli and Zhu, Jun-Yan},
-  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
-  year      = {2023}
+  journal = {arXiv},
+  year = {2022}
 }
 ```
 

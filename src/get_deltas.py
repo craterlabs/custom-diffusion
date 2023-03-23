@@ -19,7 +19,9 @@ def main(path, newtoken=0):
             st = torch.load(files)["state_dict"]
             if len(layers) == 0:
                 for key in list(st.keys()):
-                    if 'attn2.to_k' in key or 'attn2.to_v' in key:
+                    # if 'attn2.to_k' in key or 'attn2.to_v' in key:  # # 'crossattn-kv'
+                    # if 'attn2.to_k' in key or 'attn2.to_v' in key or 'attn1' in key: # 'self-crossattn-kv'
+                    if 'attn2' in key or 'attn1' in key:  # 'self-crossattn'
                         layers.append(key)
                 print(layers)
             st_delta = {'state_dict': {}}

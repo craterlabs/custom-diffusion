@@ -104,7 +104,7 @@ model:
     channels: 4
     cond_stage_trainable: True   # Note: different from the one we trained before
     add_token: True
-    freeze_model: "crossattn-kv"
+    freeze_model: "self-crossattn"
     conditioning_key: crossattn
     monitor: val/loss_simple_ema
     scale_factor: 0.18215
@@ -158,7 +158,7 @@ model:
 data:
   target: train.DataModuleFromConfig
   params:
-    batch_size: 4
+    batch_size: 2
     num_workers: 4
     wrap: false
     train:

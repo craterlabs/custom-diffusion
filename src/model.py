@@ -114,23 +114,15 @@ class CustomDiffusion(LatentDiffusion):
         self.add_token = add_token
         self.cond_stage_trainable = cond_stage_trainable
         super().__init__(cond_stage_trainable=cond_stage_trainable, *args, **kwargs)
+        self.layer_dict = {'crossattn-kv': ['attn2.to_k', 'attn2.to_v'], 'crossattn': ['attn2'], \
+                      'self-crossattn-kv': ['attn2.to_k', 'attn2.to_v', 'attn1'], 'self-crossattn': ['attn2', 'attn1']}
 
-        if self.freeze_model == 'crossattn-kv':
-            for x in self.model.diffusion_model.named_parameters():
-                if 'transformer_blocks' not in x[0]:
-                    x[1].requires_grad = False
-                elif not ('attn2.to_k' in x[0] or 'attn2.to_v' in x[0]):
-                    x[1].requires_grad = False
-                else:
-                    x[1].requires_grad = True
-        elif self.freeze_model == 'crossattn':
-            for x in self.model.diffusion_model.named_parameters():
-                if 'transformer_blocks' not in x[0]:
-                    x[1].requires_grad = False
-                elif not 'attn2' in x[0]:
-                    x[1].requires_grad = False
-                else:
-                    x[1].requires_grad = True
+        for x in self.model.diffusion_model.named_parameters():
+            x[1].requires_grad = False
+            if 'transformer_blocks' in x[0]:
+                for item in self.layer_dict[self.freeze_model]:
+                    if item in x[0]:
+                        x[1].requires_grad = True 
 
         def change_checkpoint(model):
             for layer in model.children():
@@ -178,20 +170,12 @@ class CustomDiffusion(LatentDiffusion):
     def configure_optimizers(self):
         lr = self.learning_rate
         params = []
-        if self.freeze_model == 'crossattn-kv':
-            for x in self.model.diffusion_model.named_parameters():
-                if 'transformer_blocks' in x[0]:
-                    if 'attn2.to_k' in x[0] or 'attn2.to_v' in x[0]:
+        for x in self.model.diffusion_model.named_parameters():
+            if 'transformer_blocks' in x[0]:
+                for item in self.layer_dict[self.freeze_model]:
+                    if item in x[0]:
                         params += [x[1]]
                         print(x[0])
-        elif self.freeze_model == 'crossattn':
-            for x in self.model.diffusion_model.named_parameters():
-                if 'transformer_blocks' in x[0]:
-                    if 'attn2' in x[0]:
-                        params += [x[1]]
-                        print(x[0])
-        else:
-            params = list(self.model.parameters())
 
         if self.cond_stage_trainable:
             print(f"{self.__class__.__name__}: Also optimizing conditioner params!")

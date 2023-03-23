@@ -70,7 +70,7 @@ def convert(ckpt, delta_ckpt, sd_version, config, modelname, mode):
             mapping_compvis_to_diffuser_rev[diffuser_key] = key
 
     # convert checkpoint to webui
-    if mode in ['diffuser-to-webui' or 'compvis-to-webui']:
+    if mode in ['diffuser-to-webui' and 'compvis-to-webui']:
         outpath = f'{os.path.dirname(delta_ckpt)}/webui'
         os.makedirs(outpath, exist_ok=True)
         if mode == 'diffuser-to-webui':
@@ -88,14 +88,14 @@ def convert(ckpt, delta_ckpt, sd_version, config, modelname, mode):
                 for word, feat in st['modifier_token'].items():
                     torch.save({word: feat}, f'{outpath}/embeddings/{word}.pt')
         else:
-            compvis_st = torch.load(delta_ckpt)["state_dict"]
-            model.load_state_dict(compvis_st['state_dict'], strict=False)
+            st = torch.load(delta_ckpt)["state_dict"]
+            model.load_state_dict(st, strict=False)
             torch.save({'state_dict': model.state_dict()}, f'{outpath}/{modelname}')
 
             if 'embed' in st:
                 os.makedirs(f'{outpath}/embeddings/', exist_ok=True)
                 for i, feat in enumerate(st['embed']):
-                    torch.save({f'<new{i}>': feat}, f'{outpath}/embeddings/<new{i}>.pt')
+                    torch.save({f'<new{i+1}>': feat}, f'{outpath}/embeddings/<new{i+1}>.pt')
     # convert checkpoint from CompVis to diffuser
     elif mode == 'compvis-to-diffuser':
         st = torch.load(delta_ckpt)["state_dict"]
